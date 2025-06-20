@@ -49,11 +49,12 @@ fastify.get('/mastery/:riotId', async (request, reply) => {
 
     // Step 3: Get Mastery data
     const masteryRes = await axios.get(
-      `https://na1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${summonerId}`,
-      {
-        headers: { 'X-Riot-Token': apiKey }
-      }
-    );
+  `https://na1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/${puuid}`,
+  {
+    headers: { 'X-Riot-Token': apiKey }
+  }
+);
+
 
     return masteryRes.data;
 
