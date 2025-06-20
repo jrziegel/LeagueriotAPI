@@ -1,10 +1,7 @@
-require('dotenv').config();
 const fs = require('fs');
+const axios = require('axios');
 const https = require('https');
 
-const API_KEY = process.env.RIOT_API_KEY;
-const SUMMONER_ID = 'Yy3OsNhQ9No5Cw8CbUVFSK7oURkvZrJPJiNN-hLxRpZFzyLzHnkxOp8a32Iq89X437rpmkbhibqn6A';
-const REGION = 'na1';
 const DATA_DRAGON_VERSION = '14.12.1';
 
 function getJSON(url) {
@@ -26,10 +23,10 @@ function getJSON(url) {
       idToName[champMeta.data[champ].key] = champMeta.data[champ].id;
     }
 
-    // Get mastery info
-    const mastery = await getJSON(`https://${REGION}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${SUMMONER_ID}?api_key=${API_KEY}`);
+    // 🔁 Get mastery info from your local Fastify server
+    const { data: mastery } = await axios.get('http://127.0.0.1:3000/mastery/Dinglebob#dbob');
+
     console.log('Raw mastery response:', mastery);
-    
     const top25 = mastery.slice(0, 25);
 
     // Build masteryStats object
