@@ -10,15 +10,19 @@ fastify.get('/', async (request, reply) => {
   return { hello: 'Riot Proxy Server is Live!' };
 });
 
-// Updated endpoint to handle RiotID format: Dinglebob#DBob
+// Updated endpoint to handle RiotID format with "#" or "-"
 fastify.get('/mastery/:riotId', async (request, reply) => {
   try {
     const apiKey = process.env.RIOT_API_KEY;
     const riotId = request.params.riotId;
-    const [gameName, tagLine] = riotId.split('#');
 
-    if (!gameName || !tagLine) {
-      return reply.status(400).send({ error: 'Riot ID must be in the format GameName#TagLine' });
+    let gameName, tagLine;
+    if (riotId.includes('#')) {
+      [gameName, tagLine] = riotId.split('#');
+    } else if (riotId.includes('-')) {
+      [gameName, tagLine] = riotId.split('-');
+    } else {
+      return reply.status(400).send({ error: 'Riot ID must be in the format GameName#TagLine or GameName-TagLine' });
     }
 
     console.log("Looking up Riot ID:", gameName, tagLine);
