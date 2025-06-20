@@ -1,12 +1,11 @@
-// updateMastery.js
 require('dotenv').config();
 const fs = require('fs');
 const axios = require('axios');
 const FormData = require('form-data');
 
 const NEOCITIES_API_KEY = process.env.NEOCITIES_API_KEY;
-const NEOCITIES_USER = process.env.NEOCITIES_USER;
-const LOCAL_API_URL = 'http://127.0.0.1:3000/mastery/Dinglebob-dbob'; // Local proxy server URL
+const NEOCITIES_USER = process.env.NEOCITIES_USER || 'user'; // fallback
+const LOCAL_API_URL = 'http://127.0.0.1:3000/mastery/Dinglebob-dbob';
 
 const champions = {
   "Renekton": 58,
@@ -76,6 +75,6 @@ async function saveAndUpload(data) {
     const masteryData = await fetchMasteryData();
     await saveAndUpload(masteryData);
   } catch (err) {
-    console.error('❌ Error during update:', err.message);
+    console.error('❌ Error during update:', err.response?.data || err.message);
   }
 })();
