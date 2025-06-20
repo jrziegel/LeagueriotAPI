@@ -10,16 +10,32 @@ fastify.get('/', async (request, reply) => {
   return { hello: 'Riot Proxy Server is Live!' };
 });
 
-fastify.get('/mastery/:summoner', async (request, reply) => {
+// Updated endpoint to handle RiotID format: Dinglebob#DBob
+fastify.get('/mastery/:riotId', async (request, reply) => {
   try {
-    const summonerName = request.params.summoner;
     const apiKey = process.env.RIOT_API_KEY;
-    console.log("API Key:", apiKey);
+    const riotId = request.params.riotId;
+    const [gameName, tagLine] = riotId.split('#');
 
-    console.log("Summoner Name:", summonerName);
+    if (!gameName || !tagLine) {
+      return reply.status(400).send({ error: 'Riot ID must be in the format GameName#TagLine' });
+    }
 
+    console.log("Looking up Riot ID:", gameName, tagLine);
+
+    // Step 1: Get PUUID from Riot ID
+    const accountRes = await axios.get(
+      `https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}`,
+      {
+        headers: { 'X-Riot-Token': apiKey }
+      }
+    );
+
+    const puuid = accountRes.data.puuid;
+
+    // Step 2: Get Summoner info from PUUID
     const summonerRes = await axios.get(
-      `https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${summonerName}`,
+      `https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}`,
       {
         headers: { 'X-Riot-Token': apiKey }
       }
@@ -27,6 +43,7 @@ fastify.get('/mastery/:summoner', async (request, reply) => {
 
     const summonerId = summonerRes.data.id;
 
+    // Step 3: Get Mastery data
     const masteryRes = await axios.get(
       `https://na1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${summonerId}`,
       {
@@ -42,12 +59,12 @@ fastify.get('/mastery/:summoner', async (request, reply) => {
       console.error('Status:', err.response.status);
       console.error('Data:', err.response.data);
     } else {
-      console.error(err);
+      console.error(err.message);
     }
+
     reply.status(500).send({ error: 'Failed to fetch mastery data.' });
   }
 });
-
 
 const start = async () => {
   try {
