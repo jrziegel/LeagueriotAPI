@@ -6,7 +6,7 @@ const FormData = require('form-data');
 
 const NEOCITIES_API_KEY = process.env.NEOCITIES_API_KEY;
 const NEOCITIES_USER = process.env.NEOCITIES_USER;
-const LOCAL_API_URL = 'http://127.0.0.1:3000/mastery/Dinglebob#dbob'; // Local proxy server URL
+const LOCAL_API_URL = 'http://127.0.0.1:3000/mastery/Dinglebob-dbob'; // Local proxy server URL
 
 const champions = {
   "Renekton": 58,
