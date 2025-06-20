@@ -28,6 +28,8 @@ function getJSON(url) {
 
     // Get mastery info
     const mastery = await getJSON(`https://${REGION}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${SUMMONER_ID}?api_key=${API_KEY}`);
+    console.log('Raw mastery response:', mastery);
+    
     const top25 = mastery.slice(0, 25);
 
     // Build masteryStats object
