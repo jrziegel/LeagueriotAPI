@@ -59,13 +59,12 @@ async function saveAndUpload(data) {
   const form = new FormData();
   form.append('file', fs.createReadStream('./masteryData.js'), 'masteryData.js');
 
-  const response = await axios.post('https://neocities.org/api/upload', form, {
-    auth: {
-      username: NEOCITIES_USER,
-      password: NEOCITIES_API_KEY
-    },
-    headers: form.getHeaders()
-  });
+ const response = await axios.post('https://neocities.org/api/upload', form, {
+  headers: {
+    ...form.getHeaders(),
+    Authorization: `Bearer ${NEOCITIES_API_KEY}`
+  }
+});
 
   console.log('✅ Uploaded to Neocities:', response.data);
 }
