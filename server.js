@@ -66,9 +66,13 @@ fastify.get('/mastery/:riotId', async (request, reply) => {
       console.error(err.message);
     }
 
-    reply.status(500).send({ error: 'Failed to fetch mastery data.' });
-  }
+    reply.status(500).send({
+  error: 'Failed to fetch mastery data.',
+  step: err.config?.url,
+  status: err.response?.status,
+  message: err.response?.data || err.message
 });
+
 
 const start = async () => {
   try {
