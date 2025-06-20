@@ -24,7 +24,7 @@ function getJSON(url) {
     }
 
     // 🔁 Get mastery info from your local Fastify server
-    const { data: mastery } = await axios.get('http://127.0.0.1:3000/mastery/Dinglebob#dbob');
+    const { data: mastery } = await axios.get('http://127.0.0.1:3000/mastery/Dinglebob-dbob');
 
     console.log('Raw mastery response:', mastery);
     const top25 = mastery.slice(0, 25);
