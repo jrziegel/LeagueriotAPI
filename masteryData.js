@@ -4,10 +4,9 @@ const fs = require('fs');
 const axios = require('axios');
 const FormData = require('form-data');
 
-const RIOT_API_KEY = process.env.RIOT_API_KEY;
 const NEOCITIES_API_KEY = process.env.NEOCITIES_API_KEY;
 const NEOCITIES_USER = process.env.NEOCITIES_USER;
-const SUMMONER_ID = process.env.SUMMONER_ID; // numeric ID, not the summoner name
+const LOCAL_API_URL = 'http://127.0.0.1:3000/mastery/Dinglebob#dbob'; // Local proxy server URL
 
 const champions = {
   "Renekton": 58,
@@ -39,20 +38,15 @@ const champions = {
 
 async function fetchMasteryData() {
   const result = {};
+  const response = await axios.get(LOCAL_API_URL);
 
-  for (const [name, champId] of Object.entries(champions)) {
-    const url = `https://na1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${SUMMONER_ID}/by-champion/${champId}`;
-    try {
-      const response = await axios.get(url, {
-        headers: { "X-Riot-Token": RIOT_API_KEY }
-      });
-
+  for (const champ of response.data) {
+    const name = Object.keys(champions).find(key => champions[key] === champ.championId);
+    if (name) {
       result[name] = {
-        level: response.data.championLevel,
-        points: response.data.championPoints
+        level: champ.championLevel,
+        points: champ.championPoints
       };
-    } catch (err) {
-      console.error(`Failed for ${name}:`, err.response?.data || err.message);
     }
   }
 
@@ -74,10 +68,14 @@ async function saveAndUpload(data) {
     headers: form.getHeaders()
   });
 
-  console.log('Uploaded to Neocities:', response.data);
+  console.log('✅ Uploaded to Neocities:', response.data);
 }
 
 (async () => {
-  const masteryData = await fetchMasteryData();
-  await saveAndUpload(masteryData);
+  try {
+    const masteryData = await fetchMasteryData();
+    await saveAndUpload(masteryData);
+  } catch (err) {
+    console.error('❌ Error during update:', err.message);
+  }
 })();
